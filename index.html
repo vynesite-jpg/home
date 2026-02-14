@@ -1,0 +1,377 @@
+s<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebResource Hub - Free & Paid Website Directory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .category-filter {
+            transition: all 0.2s ease;
+        }
+        
+        .category-filter.active {
+            background: #4f46e5;
+            color: white;
+        }
+        
+        .price-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
+        }
+        
+        .animate-pulse-slow {
+            animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+    </style>
+</head>
+<body class="min-h-screen py-8">
+    <div class="container mx-auto px-4 max-w-6xl">
+        <!-- Header -->
+        <header class="text-center mb-12 fade-in">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">WebResource Hub</h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">Discover the best free and paid websites across various categories. Filter by type, category, or price to find exactly what you need.</p>
+            
+            <!-- Search -->
+            <div class="mt-8 max-w-md mx-auto">
+                <div class="relative">
+                    <input type="text" placeholder="Search websites..." class="w-full py-3 px-4 pr-10 rounded-lg border border-gray-300 focus:border-indigo-500 search-input">
+                    <i class="fas fa-search absolute right-3 top-3.5 text-gray-400"></i>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Category Filters -->
+        <div class="flex flex-wrap justify-center gap-3 mb-10 fade-in" style="animation-delay: 0.2s;">
+            <button class="category-filter active px-4 py-2 rounded-full bg-white shadow-sm" data-category="all">All</button>
+            <button class="category-filter px-4 py-2 rounded-full bg-white shadow-sm" data-category="video">Video</button>
+            <button class="category-filter px-4 py-2 rounded-full bg-white shadow-sm" data-category="editing">Editing</button>
+            <button class="category-filter px-4 py-2 rounded-full bg-white shadow-sm" data-category="games">Games</button>
+            <button class="category-filter px-4 py-2 rounded-full bg-white shadow-sm" data-category="generation">Generation</button>
+            <button class="category-filter px-4 py-2 rounded-full bg-white shadow-sm" data-category="design">Design</button>
+            <button class="category-filter px-4 py-2 rounded-full bg-white shadow-sm" data-category="productivity">Productivity</button>
+            <button class="category-filter px-4 py-2 rounded-full bg-white shadow-sm" data-category="education">Education</button>
+        </div>
+        
+        <!-- Price Filter -->
+        <div class="flex justify-center mb-12 fade-in" style="animation-delay: 0.3s;">
+            <div class="bg-white rounded-lg p-1 shadow-sm flex">
+                <button class="price-filter active px-4 py-2 rounded-md" data-price="all">All</button>
+                <button class="price-filter px-4 py-2 rounded-md" data-price="free">Free</button>
+                <button class="price-filter px-4 py-2 rounded-md" data-price="paid">Paid</button>
+            </div>
+        </div>
+        
+        <!-- Resources Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="resources-grid">
+            <!-- Resource cards will be generated here -->
+        </div>
+    </div>
+
+    <script>
+        // Sample data for websites
+        const websites = [
+            {
+                name: "Canva",
+                description: "Design tool for creating social media graphics, presentations, and more",
+                url: "https://canva.com",
+                category: ["design", "editing"],
+                price: "free", // free/paid/freemium
+                logo: "fas fa-paint-brush",
+                featured: true
+            },
+            {
+                name: "Unsplash",
+                description: "Beautiful, free images gifted by the world's most generous community of photographers",
+                url: "https://unsplash.com",
+                category: ["design"],
+                price: "free",
+                logo: "fas fa-camera",
+                featured: false
+            },
+            {
+                name: "Kapwing",
+                description: "Online video editor with a suite of tools for content creators",
+                url: "https://kapwing.com",
+                category: ["video", "editing"],
+                price: "freemium",
+                logo: "fas fa-film",
+                featured: true
+            },
+            {
+                name: "Khan Academy",
+                description: "Free online courses, lessons and practice for students and teachers",
+                url: "https://khanacademy.org",
+                category: ["education"],
+                price: "free",
+                logo: "fas fa-graduation-cap",
+                featured: false
+            },
+            {
+                name: "Notion",
+                description: "All-in-one workspace for notes, tasks, wikis, and databases",
+                url: "https://notion.so",
+                category: ["productivity"],
+                price: "freemium",
+                logo: "fas fa-sticky-note",
+                featured: true
+            },
+            {
+                name: "Coolors",
+                description: "Generate perfect color combinations for your designs",
+                url: "https://coolors.co",
+                category: ["design", "generation"],
+                price: "free",
+                logo: "fas fa-palette",
+                featured: false
+            },
+            {
+                name: "Remove.bg",
+                description: "Remove image backgrounds automatically in 5 seconds",
+                url: "https://remove.bg",
+                category: ["editing"],
+                price: "freemium",
+                logo: "fas fa-cut",
+                featured: false
+            },
+            {
+                name: "Synthesia",
+                description: "Create AI videos without cameras or microphones",
+                url: "https://synthesia.io",
+                category: ["video", "generation"],
+                price: "paid",
+                logo: "fas fa-robot",
+                featured: true
+            },
+            {
+                name: "Arena",
+                description: "Curated design inspiration from around the web",
+                url: "https://arena.com",
+                category: ["design"],
+                price: "free",
+                logo: "fas fa-compass",
+                featured: false
+            },
+            {
+                name: "Krisp",
+                description: "AI-powered noise cancellation for crystal clear calls",
+                url: "https://krisp.ai",
+                category: ["productivity"],
+                price: "freemium",
+                logo: "fas fa-microphone",
+                featured: false
+            },
+            {
+                name: "Itch.io",
+                description: "Marketplace for independent digital creators with a focus on games",
+                url: "https://itch.io",
+                category: ["games"],
+                price: "mixed",
+                logo: "fas fa-gamepad",
+                featured: true
+            },
+            {
+                name: "Lumen5",
+                description: "Easily create engaging video content in minutes",
+                url: "https://lumen5.com",
+                category: ["video", "generation"],
+                price: "freemium",
+                logo: "fas fa-video",
+                featured: false
+            }
+        ];
+
+        // DOM elements
+        const resourcesGrid = document.getElementById('resources-grid');
+        const categoryFilters = document.querySelectorAll('.category-filter');
+        const priceFilters = document.querySelectorAll('.price-filter');
+        const searchInput = document.querySelector('.search-input');
+        
+        // Current filters
+        let currentCategory = 'all';
+        let currentPrice = 'all';
+        let currentSearch = '';
+        
+        // Initialize the page
+        function init() {
+            renderWebsites();
+            setupEventListeners();
+        }
+        
+        // Render websites based on current filters
+        function renderWebsites() {
+            resourcesGrid.innerHTML = '';
+            
+            const filteredWebsites = websites.filter(website => {
+                // Category filter
+                const categoryMatch = currentCategory === 'all' || website.category.includes(currentCategory);
+                
+                // Price filter
+                let priceMatch = true;
+                if (currentPrice === 'free') {
+                    priceMatch = website.price === 'free';
+                } else if (currentPrice === 'paid') {
+                    priceMatch = website.price === 'paid' || website.price === 'freemium';
+                }
+                
+                // Search filter
+                const searchMatch = website.name.toLowerCase().includes(currentSearch.toLowerCase()) || 
+                                  website.description.toLowerCase().includes(currentSearch.toLowerCase());
+                
+                return categoryMatch && priceMatch && searchMatch;
+            });
+            
+            if (filteredWebsites.length === 0) {
+                resourcesGrid.innerHTML = `
+                    <div class="col-span-full text-center py-12">
+                        <i class="fas fa-search text-4xl text-gray-400 mb-4"></i>
+                        <h3 class="text-xl font-medium text-gray-700">No websites found</h3>
+                        <p class="text-gray-500 mt-2">Try adjusting your filters or search term</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            filteredWebsites.forEach((website, index) => {
+                const card = document.createElement('div');
+                card.className = `bg-white rounded-xl overflow-hidden shadow-md card-hover fade-in`;
+                card.style.animationDelay = `${index * 0.1}s`;
+                
+                // Price badge color
+                let priceBadgeColor = '';
+                let priceText = '';
+                
+                if (website.price === 'free') {
+                    priceBadgeColor = 'bg-green-100 text-green-800';
+                    priceText = 'Free';
+                } else if (website.price === 'paid') {
+                    priceBadgeColor = 'bg-red-100 text-red-800';
+                    priceText = 'Paid';
+                } else if (website.price === 'freemium') {
+                    priceBadgeColor = 'bg-blue-100 text-blue-800';
+                    priceText = 'Freemium';
+                } else {
+                    priceBadgeColor = 'bg-purple-100 text-purple-800';
+                    priceText = 'Mixed';
+                }
+                
+                card.innerHTML = `
+                    <div class="relative">
+                        <div class="h-40 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+                            <i class="${website.logo} text-white text-5xl"></i>
+                        </div>
+                        ${website.featured ? `<div class="absolute top-0 left-0 bg-yellow-500 text-white text-xs font-bold px-3 py-1 rounded-br-lg">Featured</div>` : ''}
+                        <span class="price-badge ${priceBadgeColor}">${priceText}</span>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">${website.name}</h3>
+                        <p class="text-gray-600 mb-4">${website.description}</p>
+                        <div class="flex flex-wrap gap-2 mb-5">
+                            ${website.category.map(cat => `<span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">${cat}</span>`).join('')}
+                        </div>
+                        <a href="${website.url}" target="_blank" class="block w-full text-center bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg">Visit Website</a>
+                    </div>
+                `;
+                
+                resourcesGrid.appendChild(card);
+            });
+        }
+        
+        // Set up event listeners
+        function setupEventListeners() {
+            // Category filter click
+            categoryFilters.forEach(button => {
+                button.addEventListener('click', () => {
+                    categoryFilters.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    currentCategory = button.getAttribute('data-category');
+                    renderWebsites();
+                });
+            });
+            
+            // Price filter click
+            priceFilters.forEach(button => {
+                button.addEventListener('click', () => {
+                    priceFilters.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    currentPrice = button.getAttribute('data-price');
+                    renderWebsites();
+                });
+            });
+            
+            // Search input
+            searchInput.addEventListener('input', () => {
+                currentSearch = searchInput.value;
+                renderWebsites();
+            });
+        }
+        
+        // Initialize the app
+        init();
+    </script>
+</body>
+</html><!-- Disclaimer Section -->
+<section class="disclaimer">
+  <h3>Disclaimer</h3>
+  <p>
+    This website is an independent informational and comparison platform. We do not own,
+    operate, control, or have any formal affiliation with any third-party websites, services,
+    companies, or brands referenced or linked on this site, unless explicitly stated otherwise.
+  </p>
+  <p>
+    All trademarks, logos, brand names, and services mentioned belong to their respective
+    owners and are used solely for identification and informational purposes. Any descriptions,
+    opinions, or evaluations provided are our own and are based on publicly available information
+    and/or independent analysis.
+  </p>
+  <p>
+    Links to third-party websites are provided for convenience only. We do not endorse,
+    guarantee, or assume responsibility for the content, accuracy, availability, pricing,
+    or practices of any external websites or services.
+  </p>
+  <p>
+    Use of any third-party website or service is at the user’s own discretion and risk.
+    Users are encouraged to review the terms, policies, and conditions of any third-party
+    services before engaging with them.
+  </p>
+</section>
+</html>
